@@ -1,0 +1,17 @@
+Spark supported file formats - supported under sqlContext
+
+orc
+avro
+parquet
+json
+
+#############Apis#############
+sqlContext.load 
+sqlContext.read.orc
+sqlContext.read.json
+sqlContext.read.parquet
+sqlContext.read.text
+
+
+sqlContext.load("data/data/retail_db_json/products", "json").show()
+sqlContext.read.json("data/data/retail_db_json/products").show()

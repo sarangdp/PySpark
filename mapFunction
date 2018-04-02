@@ -1,2 +1,0 @@
-### Count by order status
-orders = sc.textFile("data/data/retail_db/orders").map(lambda o: (o.split(",")[3], 1)).reduceByKey(lambda a, b: a+b)

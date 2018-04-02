@@ -1,0 +1,10 @@
+### Count by order status
+orders = sc.textFile("data/data/retail_db/orders").map(lambda o: (o.split(",")[3], 1)).reduceByKey(lambda a, b: a+b)
+
+##Filter out the Complete records
+compOrders = sc.textFile("data/data/retail_db/orders").filter(lambda o:o.split(",")[3] == 'COMPLETE')
+
+##Filter complete and closed records from Jan-2014
+compOrders = sc.textFile("data/data/retail_db/orders").
+        filter(lambda o: (o.split(",")[3] == 'COMPLETE' or o.split(",")[3] == 'CLOSED') and o.split(",")[1][:7] == '2014-01')
+

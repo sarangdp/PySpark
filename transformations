@@ -7,4 +7,32 @@ compOrders = sc.textFile("data/data/retail_db/orders").filter(lambda o:o.split("
 ##Filter complete and closed records from Jan-2014
 compOrders = sc.textFile("data/data/retail_db/orders").
         filter(lambda o: (o.split(",")[3] == 'COMPLETE' or o.split(",")[3] == 'CLOSED') and o.split(",")[1][:7] == '2014-01')
+        
+##Inner Joins -orders with orderItems
+orders = sc.textFile("data/data/retail_db/orders").map(lambda o : (int(o.split(",")[0]), o.split(",")[1]))
+orderItems = sc.textFile("data/data/retail_db/order_items").map(lambda oi: (int(oi.split(",")[1]), float(oi.split(",")[4])))
+orderJoin = orders.join(orderItems)
 
+********************************output**********************************
+(32768, (u'2014-02-12 00:00:00.0', 399.98))
+(49152, (u'2014-05-27 00:00:00.0', 299.98))
+(4, (u'2013-07-25 00:00:00.0', 49.98))
+********************************output**********************************
+
+##Left Outer Joins -orders with orderItems
+
+orders = sc.textFile("data/data/retail_db/orders").map(lambda o : (int(o.split(",")[0]), o.split(",")[3]))
+orderItems = sc.textFile("data/data/retail_db/order_items").map(lambda oi: (int(oi.split(",")[1]), float(oi.split(",")[4])))
+orderLeftJoin = orders.leftOuterJoin(orderItems).filter(lambda o: o[1][1] == None)
+********************************output**********************************
+(43692, (u'PENDING_PAYMENT', None))
+(32, (u'COMPLETE', None))
+(40, (u'PENDING_PAYMENT', None))
+(32776, (u'CLOSED', None))
+(65904, (u'PENDING_PAYMENT', None))
+(60, (u'PENDING_PAYMENT', None))
+(38240, (u'COMPLETE', None))
+(57440, (u'COMPLETE', None))
+(76, (u'COMPLETE', None))
+(80, (u'COMPLETE', None))
+********************************output**********************************

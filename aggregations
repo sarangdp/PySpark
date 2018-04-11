@@ -1,0 +1,10 @@
+##Get new REvenue by id using REDUCE
+
+#Fetch order id an subtotal
+orderItems = sc.textFile("data/data/retail_db/order_items").map(lambda oi: (int(oi.split(",")[1]), float(oi.split(",")[4])))
+
+#Filter by given id
+orderItemsFilterd = orderItems.filter(lambda oi: oi[0]==2)
+
+##Take total by reduce
+orderItemsFilterd.map(lambda oif: oif[1]).reduce(lambda x,y : x+y)

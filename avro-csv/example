@@ -1,0 +1,7 @@
+##Add avro and csv jar in the package
+ pyspark --master yarn --conf spark.ui.port=34243 --packages com.databricks:spark-avro_2.10:2.0.1,com.databricks:spark-csv_2.10:1.1.0
+ 
+ df = sqlContext.read.format("com.databricks.spark.avro").load("/user/sarangdp1/twitter.avro")
+df.registerTempTable("twitter")
+sortedData = sqlContext.sql("select * from twitter order by username")
+sortedData.select("username","tweet").write.format("com.databricks.spark.csv").option("header","true").save("soerteddata.csv")

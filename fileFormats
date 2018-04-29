@@ -1,4 +1,7 @@
-Spark supported file formats - supported under sqlContext
+1. Spark supported file formats - supported under sqlContext
+2. default data source (parquet unless otherwise configured by spark.sql.sources.default)
+3. Data sources are specified by their fully qualified name (i.e., org.apache.spark.sql.parquet),
+    but for built-in sources you can also use their short names (json, parquet, jdbc). 
 
 orc
 avro
@@ -15,3 +18,5 @@ sqlContext.read.text
 
 sqlContext.load("data/data/retail_db_json/products", "json").show()
 sqlContext.read.json("data/data/retail_db_json/products").show()
+
+df.select("name", "age").write.format("parquet").save("namesAndAges.parquet")

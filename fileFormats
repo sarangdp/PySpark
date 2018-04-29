@@ -20,3 +20,6 @@ sqlContext.load("data/data/retail_db_json/products", "json").show()
 sqlContext.read.json("data/data/retail_db_json/products").show()
 
 df.select("name", "age").write.format("parquet").save("namesAndAges.parquet")
+
+##saving using Snappy codec
+rddName.saveAsTextFile(“path”,compressionCodecClass=“org.apache.hadoop.io.compress.SnappyCodec”)

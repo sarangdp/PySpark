@@ -1,0 +1,28 @@
+/***********************Get the Subtotal by the order status************************/
+
+orders = sc.textFile("/user/******/sqoop_import/retail_db/orders");
+order_items = sc.textFile("/user/*****/sqoop_import/retail_db/order_items");
+###Filter the orders by status
+ordersFilter = orders.filter(lambda rec: rec.split(",")[3] in ('CLOSED','COMPLETE','PROCESSING'));
+##Create tuple with orderId and Status
+ordersMap = ordersFilter.map(lambda rec: (int(rec.split(",")[0]),rec.split(",")[3]))
+##Create tuple with orderId and subtotal
+orderItemsMap = order_items.map(lambda rec:(int(rec.split(",")[1]),float(rec.split(",")[4])))
+ordersJoin = ordersMap.join(orderItemsMap).map(lambda rec: rec[1]);
+totalByStatus = ordersJoin.reduceByKey(lambda a,b:a+b);
+
+/************************Orders with No order items************************/
+
+orders = sc.textFile("/user/******/sqoop_import/retail_db/orders").map(lambda rec:(int(rec.split(",")[0]),rec));
+order_items = sc.textFile("/user/******/sqoop_import/retail_db/order_items").map(lambda rec:(int(rec.split(",")[1]),rec));
+ordersJoin = orders.leftOuterJoin(order_items);
+ordersWithNoItem = ordersJoin.filter(lambda rec: rec[1][1] == None)
+for i in ordersWithNoItem.take(10):print(i)
+
+/************************Daily Revenue sorted************************/
+
+orders = sc.textFile("/user/******/sqoop_import/retail_db/orders").map(lambda rec:(int(rec.split(",")[0]),rec.split(",")[1]));
+order_items = sc.textFile("/user/******/sqoop_import/retail_db/order_items").map(lambda rec:(int(rec.split(",")[1]),float(rec.split(",")[4])));
+ordersJoin = orders.join(order_items).map(lambda rec:rec[1]);
+revPerDaySorted = ordersJoin.reduceByKey(lambda x,y:x+y).sortByKey();
+revPerDaySorted.map(lambda rec: rec[0] + "," + str(rec[1])).saveAsTextFile("/user/sarangdp/pyspark/daily_rev");

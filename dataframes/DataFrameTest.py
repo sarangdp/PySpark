@@ -27,3 +27,6 @@ orderItemsDF = orderItemsCSV. \
     withColumn('order_item_product_price', orderItemsCSV.order_item_product_price.cast(FloatType()))
 
 orderItemsDF.printSchema()
+
+## Where or filter
+orderItemsDF.where("order_item_subtotal != round((order_item_quantity * order_item_product_price),2)").show()

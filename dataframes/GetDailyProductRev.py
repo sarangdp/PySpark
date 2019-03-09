@@ -30,8 +30,18 @@ orderDF.where("order_status in ('COMPLETE','CLOSED')").join(orderItemsDF, orderD
 .where(orderItemsDF.order_item_order_id.isNull()).select(orderDF.order_id, orderDF.order_status).show()
 
 ## Aggregation
-from pyspark.sql.functions import sum as _sum
-orderItemsDF.filter("order_item_order_id = 2").agg(_sum("order_item_subtotal")).show()
+from pyspark.sql.functions import sum,round
+orderItemsDF.filter("order_item_order_id = 2").agg(sum("order_item_subtotal")).show()
 
 ##Group by
- orderItemsDF.groupBy("order_item_order_id").agg(_round(_sum("order_item_subtotal"),2).alias("order_rev")).show()
+ orderItemsDF.groupBy("order_item_order_id").agg(round(sum("order_item_subtotal"),2).alias("order_rev")).show()
+
+ ##Sorting
+ orderItemsDF.orderBy(orderItemsDF.order_item_order_id,orderItemsDF.order_item_subtotal.desc()).show()
+ 
+ dailyProdRev = orderDF.where("order_status in ('COMPLETE','CLOSED')") \
+ .join(orderItemsDF, orderDF.order_id == orderItemsDF.order_item_order_id) \
+ .groupBy(orderDF.order_date,orderItemsDF.order_item_product_id) \
+ .agg(round(sum(orderItemsDF.order_item_subtotal),2).alias("order_rev"))
+ 
+ dailyProdRev.orderBy('order_date',dailyProdRev.order_rev.desc()).show()

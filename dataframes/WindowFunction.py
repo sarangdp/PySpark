@@ -31,3 +31,15 @@ type(spec) ## <class 'pyspark.sql.window.WindowSpec'>
  orderItemsDF \
  .select('order_item_order_id','order_item_subtotal',round(orderItemsDF.order_item_subtotal/sum(orderItemsDF.order_item_subtotal) \
  .over(spec),2).alias('order_rev')).show()
+
+ ##Order order items by subtotal and next highest order item 
+  from pyspark.sql.functions import *
+  spec1 = Window.partitionBy('order_item_order_id').orderBy(orderItemsDF.order_item_subtotal.desc())
+  
+  leadOrderItems = orderItemsDF.withColumn('next_order_item_rev',lead('order_item_subtotal').over(spec1)) \
+  .orderBy(orderItemsDF.order_item_order_id,orderItemsDF.order_item_subtotal.desc()) \
+ .drop('order_item_product_id','order_item_quantity','order_item_product_price') 
+  
+  ##get the difference between subTotal and next highest order item subtotal
+   leadOrderItems.withColumn('diff_rev',leadOrderItems.order_item_subtotal-leadOrderItems.next_order_item_rev).show()
+ 

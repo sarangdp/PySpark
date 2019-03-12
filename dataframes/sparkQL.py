@@ -21,3 +21,9 @@ spark.sql("select * from orders").show()
 
 orders = spark.read.table('retail_db.orders').show()
 employees = spark.sql("select * from foodmart.employees").show()
+
+# Read the data from hive table
+spark.read.table("sqoop_import.categories").show()
+
+spark.sql("use sqoop_import")
+spark.sql("show tables").show()
